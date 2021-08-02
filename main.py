@@ -34,6 +34,8 @@ root.tk.call('wm', 'iconphoto', root._w, img)
 # login / register interface class
 
 class LoginWindow:
+    login_x_value = (WIDTH / 3) / 10
+    entry_width = 25
     def __init__(self, master):
         self.main_frame = tk.Frame(master, width = WIDTH, height = HEIGHT, bg = SAILOR_BLUE)
         self.main_frame.pack()
@@ -46,25 +48,48 @@ class LoginWindow:
         self.bottom_frame = tk.Frame(self.main_frame, width = WIDTH, height = HEIGHT / 10, bg = MINT_GREEN)
         self.bottom_frame.place(x = 0, y = HEIGHT - (HEIGHT / 10))
 
-        self.clock = tk.Label(self.bottom_frame, text = 'ou ye', font = ('Calibri', 15),bg = SAILOR_BLUE, fg = MINT_GREEN)
+        self.clock = tk.Label(self.bottom_frame, font = ('Calibri', 15),bg = SAILOR_BLUE, fg = MINT_GREEN)
         self.clock.place(x = WIDTH - (WIDTH / 5), y = (HEIGHT / 10) / 3)
         self.get_time()
 
         self.contact_label = tk.Label(self.bottom_frame, bg = SAILOR_BLUE, fg = MINT_GREEN ,text = '  Contact me at vladoferko3@gmail.com  \n  or at +421 944 954 513  ')
         self.contact_label.place(x = 15, y = (HEIGHT / 10) / 3)
 
-        # login frame and its entry boxes
+        # login frame and its entry boxes and so on...
 
         self.login_frame = tk.Frame(self.main_frame, width = WIDTH / 3, height = HEIGHT / 1.5, bg = MINT_GREEN)
         self.login_frame.place(x = WIDTH / 2 - (WIDTH / 3) / 2, y = (HEIGHT - (HEIGHT / 1.5)) / 2)
 
-    
+        self.username_label = tk.Label(self.login_frame, text = 'username : ', bg = MINT_GREEN, fg = SAILOR_BLUE, font = ('Calibri', 10))
+        self.username_label.place(x = LoginWindow.login_x_value, y = (HEIGHT / 1.5) / 8)
+
+        self.username_entry = tk.Entry(self.login_frame, width = LoginWindow.entry_width, bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
+        self.username_entry.place(x = LoginWindow.login_x_value, y = (HEIGHT / 1.5) / 6)
+
+        self.password_label = tk.Label(self.login_frame, text = 'password : ', bg = MINT_GREEN, fg = SAILOR_BLUE, font = ('Calibri', 10))
+        self.password_label.place(x = LoginWindow.login_x_value, y = (HEIGHT / 1.5) / 4.5)
+
+        self.password_entry = tk.Entry(self.login_frame, show = '*' ,width = LoginWindow.entry_width, bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
+        self.password_entry.place(x = LoginWindow.login_x_value, y = (HEIGHT / 1.5) / 3.8)
+
+        self.register_button = tk.Button(self.login_frame, text = "I don't have an accout yet",  bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', command = self.register_func)
+        self.register_button.place(x = LoginWindow.login_x_value, y = (HEIGHT / 1.5) / 2.65)
+
+        self.login_button = tk.Button(self.login_frame, text = 'Login', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
+        self.login_button.place(x = LoginWindow.login_x_value, y = (HEIGHT / 1.5) / 3.2)
+
+
     # function which gives me a time
 
     def get_time(self):
         self.timeVar = time.strftime('%H:%M:%S')
         self.clock.config(text = '  ' + self.timeVar + '                    ')
         self.clock.after(500, self.get_time)
+
+    # function for registrating new users
+
+    def register_func(self):
+        print('Yes')
 
 
 
@@ -86,3 +111,4 @@ login = LoginWindow(root)
 
 root.mainloop()
 
+    
