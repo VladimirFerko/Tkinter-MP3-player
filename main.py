@@ -38,6 +38,9 @@ class LoginWindow:
         self.main_frame = tk.Frame(master, width = WIDTH, height = HEIGHT, bg = SAILOR_BLUE)
         self.main_frame.pack()
 
+        self.intro_label = tk.Label(self.main_frame, text = 'Welcome to the MP3 player by vladimirferko', bg = SAILOR_BLUE, fg = MINT_GREEN, font = ('Calibri', 18))
+        self.intro_label.place(x = WIDTH / 3.5, y = HEIGHT / 10)
+
         # bottom frame and its labels, there are clock and contact of this app
 
         self.bottom_frame = tk.Frame(self.main_frame, width = WIDTH, height = HEIGHT / 10, bg = MINT_GREEN)
@@ -49,6 +52,8 @@ class LoginWindow:
 
         self.contact_label = tk.Label(self.bottom_frame, bg = SAILOR_BLUE, fg = MINT_GREEN ,text = '  Contact me at vladoferko3@gmail.com  \n  or at +421 944 954 513  ')
         self.contact_label.place(x = 15, y = (HEIGHT / 10) / 3)
+
+        # login frame and its entry boxes
 
         self.login_frame = tk.Frame(self.main_frame, width = WIDTH / 3, height = HEIGHT / 1.5, bg = MINT_GREEN)
         self.login_frame.place(x = WIDTH / 2 - (WIDTH / 3) / 2, y = (HEIGHT - (HEIGHT / 1.5)) / 2)
@@ -77,7 +82,7 @@ class MainWindow(LoginWindow):
 
 
 
-win = MainWindow(root)
+login = LoginWindow(root)
 
 root.mainloop()
 
