@@ -57,27 +57,26 @@ class LoginWindow:
 
         # login frame and its entry boxes and so on...
 
-        self.login_frame = tk.Frame(self.main_frame, width = WIDTH / 3, height = HEIGHT / 1.5, bg = MINT_GREEN)
+        self.login_frame = tk.Frame(self.main_frame, width = WIDTH / 3, height = HEIGHT / 3, bg = MINT_GREEN)
+        self.username_label = tk.Label(self.login_frame, text = 'username : ', bg = MINT_GREEN, fg = SAILOR_BLUE, font = ('Calibri', 10))
+        self.username_entry = tk.Entry(self.login_frame, width = LoginWindow.entry_width, bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
+        self.password_label = tk.Label(self.login_frame, text = 'password : ', bg = MINT_GREEN, fg = SAILOR_BLUE, font = ('Calibri', 10))
+        self.password_entry = tk.Entry(self.login_frame, show = '*' ,width = LoginWindow.entry_width, bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
+        self.login_button = tk.Button(self.login_frame, text = 'Login', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
+        self.register_button = tk.Button(self.login_frame, text = "I don't have an accout yet",  bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', command = self.register_func)
+
         self.login_frame.place(x = WIDTH / 2 - (WIDTH / 3) / 2, y = (HEIGHT - (HEIGHT / 1.5)) / 2)
 
-        self.username_label = tk.Label(self.login_frame, text = 'username : ', bg = MINT_GREEN, fg = SAILOR_BLUE, font = ('Calibri', 10))
-        self.username_label.place(x = LoginWindow.login_x_value, y = (HEIGHT / 1.5) / 8)
+        self.login_widget_tuple = (self.username_label, self.username_entry, self.password_label, self.password_entry, self.register_button, self.login_button)
 
-        self.username_entry = tk.Entry(self.login_frame, width = LoginWindow.entry_width, bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
-        self.username_entry.place(x = LoginWindow.login_x_value, y = (HEIGHT / 1.5) / 6)
 
-        self.password_label = tk.Label(self.login_frame, text = 'password : ', bg = MINT_GREEN, fg = SAILOR_BLUE, font = ('Calibri', 10))
-        self.password_label.place(x = LoginWindow.login_x_value, y = (HEIGHT / 1.5) / 4.5)
 
-        self.password_entry = tk.Entry(self.login_frame, show = '*' ,width = LoginWindow.entry_width, bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
-        self.password_entry.place(x = LoginWindow.login_x_value, y = (HEIGHT / 1.5) / 3.8)
 
-        self.register_button = tk.Button(self.login_frame, text = "I don't have an accout yet",  bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', command = self.register_func)
-        self.register_button.place(x = LoginWindow.login_x_value, y = (HEIGHT / 1.5) / 2.65)
-
-        self.login_button = tk.Button(self.login_frame, text = 'Login', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
-        self.login_button.place(x = LoginWindow.login_x_value, y = (HEIGHT / 1.5) / 3.2)
-
+        for index, item in enumerate(self.login_widget_tuple):
+            if index < 4:
+                item.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 2.5) / 10) + index * 25)
+            else:
+                item.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 2.5) / 10) + index * 30)
 
         # widgets for registrating users
 
@@ -109,8 +108,10 @@ class LoginWindow:
     def register_func(self):
         self.login_frame.place_forget()
         self.register_frame.place(x = WIDTH / 2 - (WIDTH / 3) / 2, y = (HEIGHT - (HEIGHT / 1.5)) / 2)
-        for item in self.register_widget_tuple:
-            print(item)
+
+
+        for index, item in enumerate(self.register_widget_tuple):
+            item.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 2.5) / 10) + index * 25)
         
 
 
