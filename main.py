@@ -31,6 +31,17 @@ root.resizable(0,0)
 img = tk.PhotoImage(file= MAIN_ICON)
 root.tk.call('wm', 'iconphoto', root._w, img)
 
+# connection with postgres database using psycopg2 module
+
+conn = psycopg2.connect(
+    host = 'localhost',
+    database = 'mp3playerApp',
+    user = 'postgres',
+    password = 'password'
+)
+conn.set_session(autocommit = True)
+
+
 # login / register interface class
 
 class LoginWindow:
@@ -96,7 +107,7 @@ class LoginWindow:
         self.register_password2_entry = tk.Entry(self.register_frame, width = LoginWindow.entry_width, bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', show = '*')
 
         self.register_exit_button = tk.Button(self.register_frame, text = 'exit', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', command = self.exit_registration_func)
-        self.register_confirm_button = tk.Button(self.register_frame, text = 'Confirm registration', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
+        self.register_confirm_button = tk.Button(self.register_frame, text = 'Confirm registration', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', command = self.confirm_registration_func)
 
         self.register_widget_tuple = (self.register_email_label, self.register_email_entry, self.register_name_label, self.register_name_entry, self.register_password1_label, self.register_password1_entry, self.register_password2_label, self.register_password2_entry, self.register_confirm_button, self.register_exit_button)
         self.register_entry_tuple = (self.register_name_entry, self.register_email_entry, self.register_password1_entry, self.register_password2_entry)
@@ -135,9 +146,15 @@ class LoginWindow:
             else:
                 item.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 2.5) / 10) + index * 30)
         
+        
         for item in self.register_entry_tuple:
             item.delete(0, 'end')
 
+
+    # function for confirming registrations, writing to database and so on
+
+    def confirm_registration_func(self):
+        return
         
 
 

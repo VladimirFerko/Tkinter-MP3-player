@@ -1,6 +1,7 @@
 import os.path
 
-MAIN_ICON = os.path.join('/home', 'vladimir','Documments','programming','mp3player','pictures')
-print(MAIN_ICON)
-print('/home/vladimir/Documents/programming/mp3player/pictures')
-print(MAIN_ICON == '/home/vladimir/Documents/programming/mp3player/pictures')
+HEIGHT = 800
+WIDTH = 1200
+
+print((HEIGHT - (HEIGHT / 1.5)) / 2)
+print(WIDTH / 2 - (WIDTH / 3))
