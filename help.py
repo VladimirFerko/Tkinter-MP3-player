@@ -1,7 +1,5 @@
-import os.path
+import requests
 
-HEIGHT = 800
-WIDTH = 1200
+r = requests.get('https://docs.python-requests.org/en/master/user/quickstart/')
 
-print((HEIGHT - (HEIGHT / 1.5)) / 2)
-print(WIDTH / 2 - (WIDTH / 3))
+print(r)

@@ -1,10 +1,10 @@
-import tkinter as tk
 from pygame import mixer  
+import tkinter as tk
+import requests
 import psycopg2
-import os
 import os.path
 import time
-import sys
+import os
 
 # variables for main window size (pixels)
 
@@ -47,6 +47,7 @@ conn.set_session(autocommit = True)
 class LoginWindow:
     login_x_value = (WIDTH / 3) / 10
     entry_width = 25
+    cursor = conn.cursor()
     def __init__(self, master):
         self.main_frame = tk.Frame(master, width = WIDTH, height = HEIGHT, bg = SAILOR_BLUE)
         self.main_frame.pack()
@@ -110,7 +111,9 @@ class LoginWindow:
         self.register_confirm_button = tk.Button(self.register_frame, text = 'Confirm registration', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', command = self.confirm_registration_func)
 
         self.register_widget_tuple = (self.register_email_label, self.register_email_entry, self.register_name_label, self.register_name_entry, self.register_password1_label, self.register_password1_entry, self.register_password2_label, self.register_password2_entry, self.register_confirm_button, self.register_exit_button)
-        self.register_entry_tuple = (self.register_name_entry, self.register_email_entry, self.register_password1_entry, self.register_password2_entry)
+        self.register_entry_tuple = (self.register_email_entry, self.register_name_entry, self.register_password1_entry, self.register_password2_entry)
+
+        # these widgets will appear if something will go wrong
 
     # function which gives me a time
 
@@ -126,20 +129,19 @@ class LoginWindow:
         self.register_frame.place(x = WIDTH / 2 - (WIDTH / 3) / 2, y = (HEIGHT - (HEIGHT / 1.5)) / 2)
 
 
-        for index, item in enumerate(self.register_widget_tuple):
-            if index < 8:
-                item.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 2.5) / 10) + index * 25)
-            else: 
-                item.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 6) / 10) + (index * 28) + 20)
-
-        for item in self.login_entry_tuple:
-            item.delete(0, 'end')
+        self.show_register_widgets()
 
     # exit registration function
 
     def exit_registration_func(self):
         self.register_frame.place_forget()
         self.login_frame.place(x = WIDTH / 2 - (WIDTH / 3) / 2, y = (HEIGHT - (HEIGHT / 1.5)) / 2)
+        
+        self.show_login_widgets()
+
+    # 2 functions for showing widgets on the screen 
+
+    def show_login_widgets(self):
         for index, item in enumerate(self.login_widget_tuple):
             if index < 4:
                 item.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 2.5) / 10) + index * 25)
@@ -151,10 +153,51 @@ class LoginWindow:
             item.delete(0, 'end')
 
 
+    def show_register_widgets(self):
+        for index, item in enumerate(self.register_widget_tuple):
+            if index < 8:
+                item.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 2.5) / 10) + index * 25)
+            else: 
+                item.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 6) / 10) + (index * 28) + 20)
+
+        for item in self.login_entry_tuple:
+            item.delete(0, 'end')
+
+
     # function for confirming registrations, writing to database and so on
 
     def confirm_registration_func(self):
-        return
+        for item in self.register_entry_tuple:
+            print(item.get())
+        
+        self.email_address = self.register_email_entry.get().strip()
+        self.response = requests.get(
+        "https://isitarealemail.com/api/email/validate",
+        params = {'email': self.email_address})
+
+        print(self.response.json())
+
+        LoginWindow.cursor.execute(
+            "SELECT * FROM users"
+        )
+        self.user_database = LoginWindow.cursor.fetchall()
+        print(self.user_database)
+
+        for item in self.user_database:
+            if self.response.json()['status'] == 'invalid':
+                print('invalid email adress')
+
+            elif item[1] == self.register_entry_tuple[0].get():
+                print(item[1], self.register_entry_tuple[0].get())
+                print('they are the same, we should not let that happen')
+
+
+        '''
+        LoginWindow.cursor.execute(
+            f"INSERT INTO users (user_email, user_name, user_password) VALUES ('{self.register_entry_tuple[0].get()}', '{self.register_entry_tuple[1].get()}', '{self.register_entry_tuple[2].get()}')"
+        )
+        '''
+        
         
 
 
