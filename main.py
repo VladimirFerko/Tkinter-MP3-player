@@ -20,6 +20,7 @@ MAIN_ICON = os.path.join('/','home', 'vladimir','Documents','programming','mp3pl
 SAILOR_BLUE = '#296C92'
 MINT_GREEN = '#CFFFE5'
 WHITE = '#FFFFFF'
+WARNING_RED = '#E60000'
 
 # main window options
 
@@ -115,6 +116,11 @@ class LoginWindow:
 
         # these widgets will appear if something will go wrong
 
+        self.not_valid_email_widget = tk.Label(self.register_frame, text = "This email doesn't exist", bg = WARNING_RED, fg = WHITE)
+        self.user_already_registrated = tk.Label(self.register_frame, text = "This email is already used", bg = WARNING_RED, fg = WHITE)
+        self.taken_username = tk.Label(self.register_frame, text = "There is already an user using this username", bg = WARNING_RED, fg = WHITE)
+
+
     # function which gives me a time
 
     def get_time(self):
@@ -185,11 +191,13 @@ class LoginWindow:
 
         for item in self.user_database:
             if self.response.json()['status'] == 'invalid':
-                print('invalid email adress')
+                self.not_valid_email_widget.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
 
             elif item[1] == self.register_entry_tuple[0].get():
-                print(item[1], self.register_entry_tuple[0].get())
-                print('they are the same, we should not let that happen')
+                self.user_already_registrated.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
+
+            elif item[2] == self.register_entry_tuple[1].get():
+                self.taken_username.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
 
 
         '''
