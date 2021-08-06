@@ -116,9 +116,8 @@ class LoginWindow:
 
         # these widgets will appear if something will go wrong
 
-        self.not_valid_email_widget = tk.Label(self.register_frame, text = "This email doesn't exist", bg = WARNING_RED, fg = WHITE)
-        self.user_already_registrated = tk.Label(self.register_frame, text = "This email is already used", bg = WARNING_RED, fg = WHITE)
-        self.taken_username = tk.Label(self.register_frame, text = "There is already an user using this username", bg = WARNING_RED, fg = WHITE)
+        self.error_widget = tk.Label(self.register_frame, bg = WARNING_RED, fg = WHITE)
+        
 
 
     # function which gives me a time
@@ -181,30 +180,60 @@ class LoginWindow:
         "https://isitarealemail.com/api/email/validate",
         params = {'email': self.email_address})
 
-        print(self.response.json())
-
         LoginWindow.cursor.execute(
             "SELECT * FROM users"
         )
         self.user_database = LoginWindow.cursor.fetchall()
-        print(self.user_database)
 
-        for item in self.user_database:
-            if self.response.json()['status'] == 'invalid':
-                self.not_valid_email_widget.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
+        # if app has no users it will check for requirements in this if statement and here 
 
-            elif item[1] == self.register_entry_tuple[0].get():
-                self.user_already_registrated.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
-
-            elif item[2] == self.register_entry_tuple[1].get():
-                self.taken_username.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
+        if len(self.user_database) == 0:
 
 
-        '''
-        LoginWindow.cursor.execute(
-            f"INSERT INTO users (user_email, user_name, user_password) VALUES ('{self.register_entry_tuple[0].get()}', '{self.register_entry_tuple[1].get()}', '{self.register_entry_tuple[2].get()}')"
-        )
-        '''
+            if self.response.json()['status'] != 'valid':
+                self.error_widget.configure(text = "This email adress doesn't exist")
+                self.error_widget.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
+            elif len(self.register_password1_entry.get()) < 6:
+                self.error_widget.configure(text = 'Password has to be at least 6 characters long')
+                self.error_widget.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
+
+            elif self.register_entry_tuple[2].get() != self.register_entry_tuple[3].get():
+                self.error_widget.configure(text = "Passwords doesn't match")
+                self.error_widget.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
+            else:
+                self.error_widget.place_forget()
+                LoginWindow.cursor.execute(
+                    f"INSERT INTO users (user_email, user_name, user_password) VALUES ('{self.register_entry_tuple[0].get()}', '{self.register_entry_tuple[1].get()}', '{self.register_entry_tuple[2].get()}')"
+                )
+            
+        # here program will loop through users in database and check if there is user with certain email or username and so on
+
+        else:
+            for item in self.user_database:
+                if self.response.json()['status'] != 'valid':
+                    self.error_widget.configure(text = "This email adress doesn't exist")
+                    self.error_widget.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
+
+                elif item[1] == self.register_entry_tuple[0].get():
+                    self.error_widget.config(text = 'This email adress is already used')
+                    self.error_widget.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
+
+                elif item[2] == self.register_entry_tuple[1].get():
+                    self.error_widget.configure(text = 'This username is already used')
+                    self.error_widget.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
+
+                elif len(self.register_password1_entry.get()) < 6:
+                    self.error_widget.configure(text = 'Password has to be at least 6 characters long')
+                    self.error_widget.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
+
+                elif self.register_entry_tuple[2].get() != self.register_entry_tuple[3].get():
+                    self.error_widget.configure(text = "Passwords doesn't match")
+                    self.error_widget.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
+
+                else:
+                    LoginWindow.cursor.execute(
+                        f"INSERT INTO users (user_email, user_name, user_password) VALUES ('{self.register_entry_tuple[0].get()}', '{self.register_entry_tuple[1].get()}', '{self.register_entry_tuple[2].get()}')"
+                    )
         
         
 

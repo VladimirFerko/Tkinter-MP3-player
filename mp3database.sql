@@ -6,3 +6,5 @@ CREATE TABLE users
 );
 
 DROP TABLE users;
+
+SELECT * FROM users
