@@ -3,6 +3,7 @@ import tkinter as tk
 import requests
 import psycopg2
 import os.path
+import smtplib
 import time
 import os
 
@@ -49,6 +50,9 @@ class LoginWindow:
     login_x_value = (WIDTH / 3) / 10
     entry_width = 25
     cursor = conn.cursor()
+    EMAIL_ADRESS = 'ferkovladimir24@gmail.com'
+    EMAIL_PASSWORD = 'Di0r?yes'
+
     def __init__(self, master):
         self.main_frame = tk.Frame(master, width = WIDTH, height = HEIGHT, bg = SAILOR_BLUE)
         self.main_frame.pack()
@@ -75,7 +79,7 @@ class LoginWindow:
         self.username_entry = tk.Entry(self.login_frame, width = LoginWindow.entry_width, bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
         self.password_label = tk.Label(self.login_frame, text = 'password : ', bg = MINT_GREEN, fg = SAILOR_BLUE, font = ('Calibri', 10))
         self.password_entry = tk.Entry(self.login_frame, show = '*' ,width = LoginWindow.entry_width, bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
-        self.login_button = tk.Button(self.login_frame, text = 'Login', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
+        self.login_button = tk.Button(self.login_frame, text = 'Login', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', command = self.login_func)
         self.register_button = tk.Button(self.login_frame, text = "I don't have an accout yet",  bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', command = self.register_func)
 
         self.login_frame.place(x = WIDTH / 2 - (WIDTH / 3) / 2, y = (HEIGHT - (HEIGHT / 1.5)) / 2)
@@ -172,9 +176,6 @@ class LoginWindow:
     # function for confirming registrations, writing to database and so on
 
     def confirm_registration_func(self):
-        for item in self.register_entry_tuple:
-            print(item.get())
-        
         self.email_address = self.register_email_entry.get().strip()
         self.response = requests.get(
         "https://isitarealemail.com/api/email/validate",
@@ -205,7 +206,14 @@ class LoginWindow:
                 LoginWindow.cursor.execute(
                     f"INSERT INTO users (user_email, user_name, user_password) VALUES ('{self.register_entry_tuple[0].get()}', '{self.register_entry_tuple[1].get()}', '{self.register_entry_tuple[2].get()}')"
                 )
-            
+                
+                with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                    smtp.login(LoginWindow.EMAIL_ADRESS, LoginWindow.EMAIL_PASSWORD)
+                    smtp.sendmail(LoginWindow.EMAIL_ADRESS, f'{self.register_email_entry.get()}', f'Hi {self.register_name_entry.get()} \n thank you for your registration')
+
+                for item in self.register_entry_tuple:
+                        item.delete(0, 'end')
+
         # here program will loop through users in database and check if there is user with certain email or username and so on
 
         else:
@@ -231,11 +239,22 @@ class LoginWindow:
                     self.error_widget.place(x = LoginWindow.login_x_value, y = HEIGHT / 2.5)
 
                 else:
+                    self.error_widget.place_forget()
                     LoginWindow.cursor.execute(
                         f"INSERT INTO users (user_email, user_name, user_password) VALUES ('{self.register_entry_tuple[0].get()}', '{self.register_entry_tuple[1].get()}', '{self.register_entry_tuple[2].get()}')"
                     )
-        
-        
+
+                    
+
+                    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                        smtp.login(LoginWindow.EMAIL_ADRESS, LoginWindow.EMAIL_PASSWORD)
+                        smtp.sendmail(LoginWindow.EMAIL_ADRESS, f'{self.register_email_entry.get()}', f'Hi {self.register_name_entry.get()} \n thank you for your registration')
+
+                    for item in self.register_entry_tuple:
+                        item.delete(0, 'end')
+
+    def login_func(self):
+        return
 
 
 
