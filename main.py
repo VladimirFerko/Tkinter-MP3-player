@@ -81,6 +81,7 @@ class LoginWindow:
         self.password_entry = tk.Entry(self.login_frame, show = '*' ,width = LoginWindow.entry_width, bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat')
         self.login_button = tk.Button(self.login_frame, text = 'Login', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', command = self.login_func)
         self.register_button = tk.Button(self.login_frame, text = "I don't have an accout yet",  bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', command = self.register_func)
+        self.wrong_login = tk.Label(self.login_frame, text = 'User not found',bg = WARNING_RED, fg = WHITE)
 
         self.login_frame.place(x = WIDTH / 2 - (WIDTH / 3) / 2, y = (HEIGHT - (HEIGHT / 1.5)) / 2)
 
@@ -209,7 +210,7 @@ class LoginWindow:
                 
                 with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
                     smtp.login(LoginWindow.EMAIL_ADRESS, LoginWindow.EMAIL_PASSWORD)
-                    smtp.sendmail(LoginWindow.EMAIL_ADRESS, f'{self.register_email_entry.get()}', f'Hi {self.register_name_entry.get()} \n thank you for your registration')
+                    smtp.sendmail(LoginWindow.EMAIL_ADRESS, f'{self.register_email_entry.get()}', f'Hi {self.register_name_entry.get()} \nthank you for your registration')
 
                 for item in self.register_entry_tuple:
                         item.delete(0, 'end')
@@ -248,14 +249,31 @@ class LoginWindow:
 
                     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
                         smtp.login(LoginWindow.EMAIL_ADRESS, LoginWindow.EMAIL_PASSWORD)
-                        smtp.sendmail(LoginWindow.EMAIL_ADRESS, f'{self.register_email_entry.get()}', f'Hi {self.register_name_entry.get()} \n thank you for your registration')
+                        smtp.sendmail(LoginWindow.EMAIL_ADRESS, f'{self.register_email_entry.get()}', f'Hi {self.register_name_entry.get()} \nthank you for your registration')
 
                     for item in self.register_entry_tuple:
                         item.delete(0, 'end')
 
-    def login_func(self):
-        return
 
+    # function for logging in, just for registrated users
+
+    def login_func(self):
+
+        # calling SELECT * again, because an user can be registered so i need to overwrite my variable with new users
+
+        LoginWindow.cursor.execute(
+            "SELECT * FROM users"
+        )
+        self.user_database = LoginWindow.cursor.fetchall()
+
+
+
+        for item in self.user_database:
+            if self.username_entry.get().strip() == item[2].strip() and self.password_entry.get().strip() == item[3].strip():
+                self.wrong_login.place_forget()
+                print('NOW YOU CAN PASS')
+            else:
+                self.wrong_login.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 2.5) / 10) + 185)
 
 
 # main window class
