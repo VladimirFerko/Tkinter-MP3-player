@@ -264,31 +264,27 @@ class LoginWindow:
         LoginWindow.cursor.execute(
             "SELECT * FROM users"
         )
-        self.user_database = LoginWindow.cursor.fetchall()
 
+        self.user_database = LoginWindow.cursor.fetchall()
 
 
         for item in self.user_database:
             if self.username_entry.get().strip() == item[2].strip() and self.password_entry.get().strip() == item[3].strip():
                 self.wrong_login.place_forget()
-                print('NOW YOU CAN PASS')
+                self.login_frame.place_forget()
+                self.intro_label.place_forget()
             else:
                 self.wrong_login.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 2.5) / 10) + 185)
+                
 
 
 # main window class
-
-class MainWindow(LoginWindow):
+'''
+class MainWindow:
     def __init__(self, master):
-        super().__init__(master)
+'''       
 
     
-        
-
-        
-
-
-
 
 login = LoginWindow(root)
 

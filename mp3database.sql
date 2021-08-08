@@ -8,3 +8,5 @@ CREATE TABLE users
 DROP TABLE users;
 
 SELECT * FROM users
+
+DELETE FROM users
