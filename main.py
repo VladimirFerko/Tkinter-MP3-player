@@ -130,17 +130,25 @@ class LoginWindow:
 
         self.white_stick = tk.Canvas(self.main_frame, width = 3, height = HEIGHT / 1.5, bg = WHITE)
         
-        self.logged_user_label = tk.Label(self.main_frame, bg = MINT_GREEN, fg = SAILOR_BLUE, font = ('Calibri', 12), padx = 5, pady = 5)
-        self.logged_user_label.bind('<Enter>', self.enter_log_nick)
-        self.logged_user_label.bind("<Leave>", self.leave_log_nick)
+        self.logged_user_button = tk.Button(self.main_frame, bg = MINT_GREEN, fg = SAILOR_BLUE, font = ('Calibri', 12), padx = 5, pady = 5, command = self.enter_log_nick, relief = 'flat')
+
+        self.logged_user_opts = tk.Frame(self.main_frame, bg = MINT_GREEN, width = WIDTH / 4, height = HEIGHT / 4)
+        self.logged_user_opts.bind("<Leave>", self.leave_log_nick)    
+
+        self.logged_user_label = tk.Label(self.logged_user_opts, bg = MINT_GREEN, fg = SAILOR_BLUE, font = ('Calibri', 12))
+        self.logout_button = tk.Button(self.logged_user_opts, text = 'Logout', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', pady = 10, padx = 10)
+
 
     # functions for having cursor on logged nick
 
-    def enter_log_nick(self, event):
-        print('nice')
+    def enter_log_nick(self):
+        self.logged_user_opts.place(x = 20, y = 20)
+        self.logged_user_label.configure(text = self.logged_user_button.cget('text'))
+        self.logged_user_label.place(relx = 0.3, rely = 0.2)
+        self.logout_button.place(relx = 0.3, rely = 0.5)
 
     def leave_log_nick(self, event):
-        print('noo')
+        self.logged_user_opts.place_forget()
 
 
     # function which gives me a time
@@ -294,7 +302,7 @@ class LoginWindow:
 
                 self.show_default_app()
 
-                self.logged_user_label.configure(text = item[2].strip())
+                self.logged_user_button.configure(text = item[2].strip())
 
             else:
                 self.wrong_login.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 2.5) / 10) + 185)
@@ -304,7 +312,7 @@ class LoginWindow:
 
     def show_default_app(self):
         self.white_stick.place(x = WIDTH / 5, y = HEIGHT / 8)
-        self.logged_user_label.place(x = 0, y = 0)
+        self.logged_user_button.place(x = 0, y = 0)
 
 
 login = LoginWindow(root)
