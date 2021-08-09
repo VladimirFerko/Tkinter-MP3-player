@@ -122,7 +122,25 @@ class LoginWindow:
         # these widgets will appear if something will go wrong
 
         self.error_widget = tk.Label(self.register_frame, bg = WARNING_RED, fg = WHITE)
+
+
+
+
+        # main window widgets and functions from here --------
+
+        self.white_stick = tk.Canvas(self.main_frame, width = 3, height = HEIGHT / 1.5, bg = WHITE)
         
+        self.logged_user_label = tk.Label(self.main_frame, bg = MINT_GREEN, fg = SAILOR_BLUE, font = ('Calibri', 12), padx = 5, pady = 5)
+        self.logged_user_label.bind('<Enter>', self.enter_log_nick)
+        self.logged_user_label.bind("<Leave>", self.leave_log_nick)
+
+    # functions for having cursor on logged nick
+
+    def enter_log_nick(self, event):
+        print('nice')
+
+    def leave_log_nick(self, event):
+        print('noo')
 
 
     # function which gives me a time
@@ -273,18 +291,21 @@ class LoginWindow:
                 self.wrong_login.place_forget()
                 self.login_frame.place_forget()
                 self.intro_label.place_forget()
+
+                self.show_default_app()
+
+                self.logged_user_label.configure(text = item[2].strip())
+
             else:
                 self.wrong_login.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 2.5) / 10) + 185)
                 
 
+    # this func makes us show widgets after logging in
 
-# main window class
-'''
-class MainWindow:
-    def __init__(self, master):
-'''       
+    def show_default_app(self):
+        self.white_stick.place(x = WIDTH / 5, y = HEIGHT / 8)
+        self.logged_user_label.place(x = 0, y = 0)
 
-    
 
 login = LoginWindow(root)
 
