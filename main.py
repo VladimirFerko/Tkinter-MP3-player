@@ -44,14 +44,15 @@ conn = psycopg2.connect(
 conn.set_session(autocommit = True)
 
 
-# login / register interface class
+# login / register / using interface class
 
 class LoginWindow:
     login_x_value = (WIDTH / 3) / 10
     entry_width = 25
     cursor = conn.cursor()
-    EMAIL_ADRESS = 'ferkovladimir24@gmail.com'
-    EMAIL_PASSWORD = 'Di0r?yes'
+    EMAIL_ADRESS = 'YOUR EMAIL'
+    EMAIL_PASSWORD = 'PASSWORD FOR YOUR EMAIL'
+    MUSIC_DIR = os.path.join('/','home', 'vladimir','Documents','programming','mp3player','storage')
 
     def __init__(self, master):
         self.main_frame = tk.Frame(master, width = WIDTH, height = HEIGHT, bg = SAILOR_BLUE)
@@ -69,7 +70,7 @@ class LoginWindow:
         self.clock.place(x = WIDTH - (WIDTH / 5), y = (HEIGHT / 10) / 3)
         self.get_time()
 
-        self.contact_label = tk.Label(self.bottom_frame, bg = SAILOR_BLUE, fg = MINT_GREEN ,text = '  Contact me at vladoferko3@gmail.com  \n  or at +421 944 954 513  ')
+        self.contact_label = tk.Label(self.bottom_frame, bg = SAILOR_BLUE, fg = MINT_GREEN ,text = '  Contact me at YOUR EMAIL  \n  or at YOUR PHONEq  ')
         self.contact_label.place(x = 15, y = (HEIGHT / 10) / 3)
 
         # login frame and its entry boxes and so on...
@@ -136,19 +137,24 @@ class LoginWindow:
         self.logged_user_opts.bind("<Leave>", self.leave_log_nick)    
 
         self.logged_user_label = tk.Label(self.logged_user_opts, bg = MINT_GREEN, fg = SAILOR_BLUE, font = ('Calibri', 12))
-        self.logout_button = tk.Button(self.logged_user_opts, text = 'Logout', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', pady = 10, padx = 10)
+        self.logout_button = tk.Button(self.logged_user_opts, text = 'Logout', bg = SAILOR_BLUE, fg = MINT_GREEN, relief = 'flat', pady = 10, padx = 10, command = self.logout_func)
+        self.login_time_label = tk.Label(self.logged_user_opts, bg = SAILOR_BLUE, fg = MINT_GREEN)
+
+        self.song_frame = tk.Frame(self.main_frame, width = WIDTH / 4, height = HEIGHT / 2, bg = MINT_GREEN)
+
+        self.scrollbar = tk.Scrollbar(self.song_frame)
+
+        self.play_menu = tk.Frame(self.main_frame, width = WIDTH / 2, height = HEIGHT / 8, bg = MINT_GREEN)
 
 
-    # functions for having cursor on logged nick
+        self.play_stop_button = tk.Button(self.play_menu, text = 'STOP', bg = SAILOR_BLUE, font = ('Calibri', 12), fg = WHITE, command = self.play_stop_func)
+        self.play_next_button = tk.Button(self.play_menu, text = 'Next song', bg = SAILOR_BLUE, font = ('Calibri', 12), fg = WHITE, command = self.next_song_func)
+        self.play_previous_button = tk.Button(self.play_menu, text = 'Previous song', bg = SAILOR_BLUE, font = ('Calibri', 12), fg = WHITE, command = self.prev_song_func)
 
-    def enter_log_nick(self):
-        self.logged_user_opts.place(x = 20, y = 20)
-        self.logged_user_label.configure(text = self.logged_user_button.cget('text'))
-        self.logged_user_label.place(relx = 0.3, rely = 0.2)
-        self.logout_button.place(relx = 0.3, rely = 0.5)
+        self.song_img = tk.PhotoImage(file = 'pictures/tune (2).png')
+        self.song_img_label = tk.Label(self.main_frame, image = self.song_img)
 
-    def leave_log_nick(self, event):
-        self.logged_user_opts.place_forget()
+        self.song_lbl = tk.Label(self.main_frame, fg = WHITE, bg = SAILOR_BLUE, font = ('Calibri', 12))
 
 
     # function which gives me a time
@@ -244,6 +250,7 @@ class LoginWindow:
         # here program will loop through users in database and check if there is user with certain email or username and so on
 
         else:
+
             for item in self.user_database:
                 if self.response.json()['status'] != 'valid':
                     self.error_widget.configure(text = "This email adress doesn't exist")
@@ -304,6 +311,10 @@ class LoginWindow:
 
                 self.logged_user_button.configure(text = item[2].strip())
 
+                self.login_time = time.strftime('%H:%M')
+                self.login_time_label.config(text = f'Online since {self.login_time}')
+                self.login_time_label.place(relx = 0.5, rely = 0.8)
+                
             else:
                 self.wrong_login.place(x = LoginWindow.login_x_value , y = ((HEIGHT / 2.5) / 10) + 185)
                 
@@ -311,12 +322,112 @@ class LoginWindow:
     # this func makes us show widgets after logging in
 
     def show_default_app(self):
-        self.white_stick.place(x = WIDTH / 5, y = HEIGHT / 8)
+        self.white_stick.place(x = WIDTH / 3.5, y = HEIGHT / 8)
         self.logged_user_button.place(x = 0, y = 0)
+        self.song_frame.place(x = 20, y = 225)
+
+        self.song_arr = []
+        self.song_arr_names = []
+
+        index = 0
+        for song in os.listdir(LoginWindow.MUSIC_DIR):
+            if song.endswith('.ogg') or song.endswith('.mov'):
+                self.song_arr.append(tk.Button(self.song_frame, text = f'{str(index)} - {song[0:32]}', relief = 'flat', bg = MINT_GREEN, fg = SAILOR_BLUE, command = lambda song = song: self.play_song(song)))
+                self.song_arr[index].place(x = 15, y = 15 + (index * 50))
+                self.song_arr_names.append(song)
+                index += 1
+
+    # functions for having cursor on logged nick
+
+    def enter_log_nick(self):
+        self.logged_user_opts.place(x = 20, y = 20)
+        self.logged_user_label.configure(text = self.logged_user_button.cget('text'))
+        self.logged_user_label.place(relx = 0.3, rely = 0.2)
+        self.logout_button.place(relx = 0.3, rely = 0.5)
+
+    # function to play music
+
+    def play_song(self, song):
+        os.chdir(LoginWindow.MUSIC_DIR)
+        mixer.init()
+        mixer.music.stop()
+        mixer.music.load(song)
+        mixer.music.play()
+        self.song_lbl.configure(text = song[:len(song) - 4])
+        self.song_lbl.place(x = 575, y = 110)
+        self.play_menu.place(x = 475, y = 600)
+        self.play_stop_button.place(x = 270, y = 30)
+        self.play_next_button.place(x = 450, y = 30)
+        self.play_previous_button.place(x = 50 , y = 30)
+
+        self.song_img_label.place(x = 575, y = 150)
+
+
+    def leave_log_nick(self, event):
+        self.logged_user_opts.place_forget()
+
+    # leaving all logged in widgets 
+
+    def leave_main_app(self):
+        self.logged_user_button.place_forget()
+        self.white_stick.place_forget()
+        self.logged_user_opts.place_forget()
+        self.song_frame.place_forget()
+        self.song_img_label.place_forget()
+        self.play_menu.place_forget()
+        self.song_lbl.place_forget()
+        self.wrong_login.place_forget()
+        mixer.music.unload()
+        mixer.music.stop()
+
+    # logout function
+
+    def logout_func(self):
+        self.login_frame.place(x = WIDTH / 2 - (WIDTH / 3) / 2, y = (HEIGHT - (HEIGHT / 1.5)) / 2)
+        self.leave_main_app()
+        self.show_register_widgets()
+
+
+    # function for playing and stopping the song 
+
+    def play_stop_func(self):
+        if self.play_stop_button.cget('text') == 'STOP':
+            self.play_stop_button.configure(text = 'PLAY')
+            mixer.music.pause()
+        else:
+            self.play_stop_button.configure(text = 'STOP')
+            mixer.music.unpause()
+
+    # function for playing next song 
+
+    def next_song_func(self):
+
+        for index ,item in enumerate(self.song_arr_names):
+            if self.song_lbl.cget('text') == item[:-4]:
+                if self.song_arr_names.index(item) >= len(self.song_arr_names) - 1:
+                    print('Too much')
+                    break
+                else:
+                    self.play_song(self.song_arr_names[index + 1])
+                    break
+
+
+    # function for playing previous song
+
+    def prev_song_func(self):
+
+        for index ,item in enumerate(self.song_arr_names):
+            if self.song_lbl.cget('text') == item[:-4]:
+                if self.song_arr_names.index(item) <= 0:
+                    mixer.music.rewind()
+                    break
+                else:
+                    self.play_song(self.song_arr_names[index - 1])
+                    break
+
 
 
 login = LoginWindow(root)
 
-root.mainloop()
 
-    
+root.mainloop()
